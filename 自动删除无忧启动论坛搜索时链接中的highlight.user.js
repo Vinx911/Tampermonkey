@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         解决无忧启动搜索结果中的链接打开卡住问题
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @name         自动删除无忧启动论坛搜索时链接中的highlight
+// @namespace    https://greasyfork.org/zh-CN/users/141921
+// @version      0.0.1
 // @description  自动删除无忧启动论坛搜索时链接中的highlight,防止网页卡住
-// @author       VIIs
+// @author       Vinx
 // @match
 // @grant        none
 // @require      http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js
