@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CleanReader
 // @namespace    https://greasyfork.org/zh-CN/users/141921
-// @version      0.3.1
+// @version      0.3.2
 // @description  启用后，自动进入简洁阅读模式。
 // @author       Vinx
 // @match
@@ -9,6 +9,7 @@
 // @require      https://greasyfork.org/scripts/38955-jquery-print/code/jQueryprint.js?version=254772
 // @include      *
 // @grant        none
+// @note         2018.03.18-V0.3.2 添加放大缩小按钮，并支持按键缩放（+/= :放大，- :缩小）
 // @note         2018.03.18-V0.3.1 添加ESC退出阅读模式功能
 // @note         2018.03.15-V0.3.0 添加对Discuz论坛的支持，修改标题和内容居中显示
 // @note         2018.02.28-V0.2.0 不在自动进入，添加了阅读及打印按钮
@@ -39,6 +40,10 @@ var contents = {
   'blog.163.com': {
 	'title' :".title.pre.fs1",
 	'content':".bct.fc05.fc11.nbw-blog.ztag"
+  },
+  'www.runoob.com': {
+	'title' :".article-intro h1:first",
+	'content':".article-body"
   }
 };
 
@@ -63,59 +68,95 @@ var contents = {
     var body_padding    = J("body").css("padding");
     var body_overflow_y = J("body").css("overflow-y");
 
-    var readbutton=document.createElement("div");
-    //J(readbutton).css("background-color","#ffffff");
-    J(readbutton).css("width",24);
-    J(readbutton).css("height",24);
-    J(readbutton).css("right",32);
-    J(readbutton).css("bottom",32);
-    J(readbutton).css("z-index",999999);
-    J(readbutton).css("cursor","pointer");
-    J(readbutton).css("position","fixed");
-    J(readbutton).css("margin","0 auto");
-    J(readbutton).css("color","#0593d3");
-    J(readbutton).css("font-size",24);
-    J(readbutton).attr("class","fa fa-book fa-2");
-    J(readbutton).attr("id","readbutton");
+    var read_button=document.createElement("div");
+    J(read_button).css("width",24);
+    J(read_button).css("height",24);
+    J(read_button).css("right",32);
+    J(read_button).css("bottom",32);
+    J(read_button).css("z-index",999999);
+    J(read_button).css("cursor","pointer");
+    J(read_button).css("position","fixed");
+    J(read_button).css("margin","0 auto");
+    J(read_button).css("color","#0593d3");
+    J(read_button).css("font-size",24);
+    J(read_button).attr("class","fa fa-book fa-2");
+    J(read_button).attr("id","readbutton");
 
-    var printbutton=document.createElement("div");
-    J(printbutton).css("width",24);
-    J(printbutton).css("height",24);
-    J(printbutton).css("right",32);
-    J(printbutton).css("bottom",64);
-    J(printbutton).css("z-index",999999);
-    J(printbutton).css("cursor","pointer");
-    J(printbutton).css("position","fixed");
-    J(printbutton).css("margin","0 auto");
-    J(printbutton).css("color","#0593d3");
-    J(printbutton).css("font-size",24);
-    J(printbutton).attr("class","fa fa-print fa-2");
-    J(printbutton).attr("id","printbutton");
+    var print_button=document.createElement("div");
+    J(print_button).css("width",24);
+    J(print_button).css("height",24);
+    J(print_button).css("right",32);
+    J(print_button).css("bottom",64);
+    J(print_button).css("z-index",999999);
+    J(print_button).css("cursor","pointer");
+    J(print_button).css("position","fixed");
+    J(print_button).css("margin","0 auto");
+    J(print_button).css("color","#0593d3");
+    J(print_button).css("font-size",24);
+    J(print_button).attr("class","fa fa-print fa-2");
+    J(print_button).attr("id","printbutton");
 
-    J("body").prepend(readbutton);
-    J("body").prepend(printbutton);
+    var zoom_out_button=document.createElement("div");
+    J(zoom_out_button).css("width",24);
+    J(zoom_out_button).css("height",24);
+    J(zoom_out_button).css("right",32);
+    J(zoom_out_button).css("bottom",96);
+    J(zoom_out_button).css("z-index",999999);
+    J(zoom_out_button).css("cursor","pointer");
+    J(zoom_out_button).css("position","fixed");
+    J(zoom_out_button).css("margin","0 auto");
+    J(zoom_out_button).css("color","#0593d3");
+    J(zoom_out_button).css("font-size",24);
+    J(zoom_out_button).attr("class","fa fa-search-minus fa-2");
+    J(zoom_out_button).attr("id","zoomoutbutton");
+
+    var zoom_in_button=document.createElement("div");
+    J(zoom_in_button).css("width",24);
+    J(zoom_in_button).css("height",24);
+    J(zoom_in_button).css("right",32);
+    J(zoom_in_button).css("bottom",128);
+    J(zoom_in_button).css("z-index",999999);
+    J(zoom_in_button).css("cursor","pointer");
+    J(zoom_in_button).css("position","fixed");
+    J(zoom_in_button).css("margin","0 auto");
+    J(zoom_in_button).css("color","#0593d3");
+    J(zoom_in_button).css("font-size",24);
+    J(zoom_in_button).attr("class","fa fa-search-plus fa-2");
+    J(zoom_in_button).attr("id","zoominbutton");
+
+    J("body").prepend(read_button);
+    J("body").prepend(print_button);
+    J("body").prepend(zoom_in_button);
+    J("body").prepend(zoom_out_button);
     J("#printbutton").hide();
-
-    J("#printbutton").click(function(){
-        J("#CleanReader").print();
-    });
+    J("#zoominbutton").hide();
+    J("#zoomoutbutton").hide();
 
     J("#readbutton").click(function(){
-        var isShow = J(readbutton).attr("userdata");
+        var isShow = J(read_button).attr("userdata");
         if(isShow == "true")
         {
             CencelCleanRead();
             J("#printbutton").hide();
+            J("#zoominbutton").hide();
+            J("#zoomoutbutton").hide();
         }
         else
         {
             CleanRead();
             J("#printbutton").show();
+            J("#zoominbutton").show();
+            J("#zoomoutbutton").show();
         }
+    });	
+
+    J("#printbutton").click(function(){
+        J("#CleanReader").print();
     });
 	
+	//ESC退出
 	J(document).keyup(function(){
-        var isShow = J(readbutton).attr("userdata");
+        var isShow = J(read_button).attr("userdata");
         if(event.keyCode == 27 && isShow == "true")
         {
             CencelCleanRead();
@@ -123,6 +164,31 @@ var contents = {
         }
     });
 
+	//放大缩小
+    var zoom=0;
+    J("#zoominbutton").click(function(){
+        zoom+=10;
+        J("#CleanReader").css("zoom",1+zoom/100);
+    });
+
+    J("#zoomoutbutton").click(function(){
+        zoom-=10;
+        J("#CleanReader").css("zoom",1+zoom/100);
+    });
+	
+    J(document).keydown(function(){
+        var isShow = J(read_button).attr("userdata");
+        if(event.keyCode == 107 || event.keyCode == 187)
+        {
+            zoom+=10;
+            J("#CleanReader").css("zoom",1+zoom/100);
+        }
+        else if(event.keyCode == 109 || event.keyCode == 189)
+        {
+            zoom-=10;
+            J("#CleanReader").css("zoom",1+zoom/100);
+        }
+    });
 
     function IsContentPage()
     {
@@ -226,7 +292,7 @@ var contents = {
 				J(image[k]).width(J(CleanReader).width()-20);
 			}
 		}
-        J(readbutton).attr("userdata","true");
+        J(read_button).attr("userdata","true");
 	}
 
     function CencelCleanRead()
@@ -241,7 +307,7 @@ var contents = {
 		J("body").css("padding",body_padding);
 		J("body").css("overflow-y",body_overflow_y);
 
-        J(readbutton).attr("userdata","");
+        J(read_button).attr("userdata","");
 
     }
 
