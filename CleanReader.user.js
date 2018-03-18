@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CleanReader
 // @namespace    https://greasyfork.org/zh-CN/users/141921
-// @version      0.3
+// @version      0.3.1
 // @description  启用后，自动进入简洁阅读模式。
 // @author       Vinx
 // @match
@@ -9,6 +9,10 @@
 // @require      https://greasyfork.org/scripts/38955-jquery-print/code/jQueryprint.js?version=254772
 // @include      *
 // @grant        none
+// @note         2018.03.18-V0.3.1 添加ESC退出阅读模式功能
+// @note         2018.03.15-V0.3.0 添加对Discuz论坛的支持，修改标题和内容居中显示
+// @note         2018.02.28-V0.2.0 不在自动进入，添加了阅读及打印按钮
+// @note         2017.07.19-V0.1.0 首次发布，启用后，自动进入简洁阅读模式。
 // ==/UserScript==
 
 var contents = {
@@ -109,6 +113,16 @@ var contents = {
             J("#printbutton").show();
         }
     });
+	
+	J(document).keyup(function(){
+        var isShow = J(readbutton).attr("userdata");
+        if(event.keyCode == 27 && isShow == "true")
+        {
+            CencelCleanRead();
+            J("#printbutton").hide();
+        }
+    });
+
 
     function IsContentPage()
     {
