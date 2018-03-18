@@ -140,6 +140,7 @@ var contents = {
             J("#printbutton").hide();
             J("#zoominbutton").hide();
             J("#zoomoutbutton").hide();
+			zoom=0;
         }
         else
         {
@@ -161,6 +162,9 @@ var contents = {
         {
             CencelCleanRead();
             J("#printbutton").hide();
+            J("#zoominbutton").hide();
+            J("#zoomoutbutton").hide();
+			zoom=0;
         }
     });
 
