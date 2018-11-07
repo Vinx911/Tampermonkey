@@ -55,6 +55,10 @@ var contents = {
 	'title' :".break-all.subject",
 	'content':".message.break-all:first"
   },
+  'www.oschina.net': {
+	'title' :".article-detail>.header",
+	'content':"#articleContent"
+  },
   'my.oschina.net': {
 	'title' :".article-detail>.header",
 	'content':"#articleContent"
