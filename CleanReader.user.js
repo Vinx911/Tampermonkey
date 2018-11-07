@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CleanReader
 // @namespace    https://greasyfork.org/zh-CN/users/141921
-// @version      0.3.2
+// @version      0.3.3
 // @description  启用后，自动进入简洁阅读模式。
 // @author       Vinx
 // @match
@@ -9,6 +9,7 @@
 // @require      https://greasyfork.org/scripts/38955-jquery-print/code/jQueryprint.js?version=254772
 // @include      *
 // @grant        none
+// @note         2018.11.07-V0.3.3 修复了CSDN打印的问题，添加OSChina等网站
 // @note         2018.03.18-V0.3.2 添加放大缩小按钮，并支持按键缩放（+/= :放大，- :缩小）
 // @note         2018.03.18-V0.3.1 添加ESC退出阅读模式功能
 // @note         2018.03.15-V0.3.0 添加对Discuz论坛的支持，修改标题和内容居中显示
@@ -18,7 +19,7 @@
 
 var contents = {
   'blog.csdn.net': {
-    'title':".article_title|.csdn_top",
+    'title':".title-article|.csdn_top",
     'content':".article_content"
   },
   'www.cnblogs.com': {
@@ -44,6 +45,18 @@ var contents = {
   'www.runoob.com': {
 	'title' :".article-intro h1:first",
 	'content':".article-body"
+  },
+  'lib.uml.com.cn': {
+	'title' :".arttitle",
+	'content':".artcontent"
+  },
+  'bbs.pediy.com': {
+	'title' :".break-all.subject",
+	'content':".message.break-all:first"
+  },
+  'my.oschina.net': {
+	'title' :".article-detail>.header",
+	'content':"#articleContent"
   }
 };
 
@@ -152,7 +165,17 @@ var contents = {
     });	
 
     J("#printbutton").click(function(){
-        J("#CleanReader").print();
+        J("#CleanReader").print({
+            globalStyles: false,
+            mediaPrint: false,
+            stylesheet: null,
+            noPrintSelector: ".no-print",
+            iframe: true,
+            append: null,
+            prepend: null,
+            manuallyCopyFormValues: true,
+            deferred: $.Deferred()
+        });
     });
 	
 	//ESC退出
