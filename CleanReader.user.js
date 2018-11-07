@@ -9,6 +9,7 @@
 // @require      https://greasyfork.org/scripts/38955-jquery-print/code/jQueryprint.js?version=254772
 // @include      *
 // @grant        none
+// @run-at       document-end
 // @note         2018.11.07-V0.3.3 修复了CSDN打印的问题，添加OSChina等网站
 // @note         2018.03.18-V0.3.2 添加放大缩小按钮，并支持按键缩放（+/= :放大，- :缩小）
 // @note         2018.03.18-V0.3.1 添加ESC退出阅读模式功能
