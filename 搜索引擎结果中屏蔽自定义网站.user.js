@@ -80,6 +80,10 @@ var x=new Array(
     "wenkuxiazai.com",
     "wxphp.com",
     "yuntuwang.net",
+    "www.knowsky.com",
+    "www.makaidong.com",
+    "www.mamicode.com",
+    "www.voidcn.com",
 	"www.kafan.cn › 卡饭教程"
 );
 
